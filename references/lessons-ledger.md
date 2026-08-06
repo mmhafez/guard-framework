@@ -39,3 +39,19 @@ context window costs nothing and the next run starts wiser).
 | GL-10 | Verify merges by content, not ancestry — squash merges break every graph check. | DOCTRINE |
 
 Append new lessons as GL-11, GL-12, … with the failure that bought each.
+
+## Mechanisation register (the framework applied to itself)
+
+The three states above, applied to GUARD's own rules — so none of its checks
+is satisfiable by absence of a mechanism it pretended to have:
+
+| Rule | State | Mechanism |
+|---|---|---|
+| Task cards complete, plan non-empty | MECHANISED | `scripts/guard_lint.py plan` |
+| guard.config.json valid + all six answers expressible | MECHANISED | `scripts/guard_lint.py config` + `references/guard.config.schema.json` |
+| FINDINGS.triaged.md columns + DYNAMIC-ZONE register present | MECHANISED | `scripts/guard_lint.py findings` |
+| Gate decisions recorded, phases in order | MECHANISED | `GUARD-RUN.md` template + `scripts/guard_lint.py run-state` |
+| Prompt suite single-sourced (references ↔ docs) | MECHANISED | `scripts/guard_lint.py sync` (run in build-skill.sh) |
+| Anti-weakening at merge (no vanished tests/skips) | DOCTRINE | say so plainly; check by hand at merge |
+| Quiet gate before measurements | DOCTRINE | probe snippet in execution-rules.md |
+| Revert-mutation performed honestly | DOCTRINE | inherently procedural |
