@@ -1,0 +1,4 @@
+interface:
+  display_name: "GUARD Framework"
+  short_description: "Deep, safe, user-driven analysis and optimization of AI-built repos"
+  default_prompt: "Use $guard-framework to analyze this repository for duplication, dead code, and structural drift, then build a safe, user-approved optimization plan. Start at Phase 0 (Baseline Lock) and do not modify any application code until I approve the findings at Gate A and the plan at Gate B."

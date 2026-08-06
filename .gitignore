@@ -1,0 +1,18 @@
+# OS / editor noise
+.DS_Store
+__MACOSX/
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Python cache (if anyone runs tooling)
+__pycache__/
+*.pyc
+
+# Local env / secrets — GUARD ships none; keep it that way
+.env
+*.local
+credentials.json
+*.pem
+*.key
