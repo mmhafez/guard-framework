@@ -36,22 +36,23 @@ def arrow(ax, x1, y1, x2, y2, color=INK, lw=1.6, style="-|>", ms=14, conn="arc3,
 
 
 def fig1():
-    years = ["2020", "2021", "2022", "2023", "2024"]
-    vals = [0.70, 0.48, 0.45, 1.80, 6.66]
+    # Verified series — GitClear 2025 report + 2026 "The Maintainability Gap".
+    years = ["2021", "2022", "2023", "2026 YTD"]
+    vals = [25, 21, 13, 3.8]
     fig, ax = plt.subplots(figsize=(7.6, 4.2), dpi=160)
     fig.patch.set_facecolor("white")
     ax.bar(years, vals, color=ACCENT, width=0.62)
-    ax.set_title("Commits Containing a Duplicated Code Block, by Year (%)",
+    ax.set_title("Moved (Refactored) Code as a Share of Changed Lines (%)",
                  fontsize=12, fontweight="bold", color=INK)
-    ax.set_xlabel("Year code was authored", color=FAINT)
-    ax.set_ylabel("% of commits with a duplicated block", color=FAINT)
+    ax.set_xlabel("Year", color=FAINT)
+    ax.set_ylabel("% of changed lines", color=FAINT)
     for i, v in enumerate(vals):
-        ax.text(i, v + 0.12, f"{v:.2f}", ha="center", fontsize=9, color=INK)
+        ax.text(i, v + 0.5, f"{v:g}", ha="center", fontsize=9, color=INK)
     ax.spines[["top", "right"]].set_visible(False)
     ax.tick_params(colors=FAINT)
-    ax.set_ylim(0, 7.4)
-    fig.text(0.5, 0.01, "GitClear analysis of 211M changed lines; median duplicated block ~ 10 lines",
-             ha="center", fontsize=8, color=FAINT)
+    ax.set_ylim(0, 28)
+    fig.text(0.5, 0.01, "GitClear 2025 + 2026 reports. Mirror image: duplicated blocks 40.3 -> 73.0 per 1M changed lines (+81%), 2023 -> 2026 YTD",
+             ha="center", fontsize=7.6, color=FAINT)
     plt.tight_layout(rect=[0, 0.04, 1, 1])
     plt.savefig(f"{OUT}/fig1-duplication-surge.png", bbox_inches="tight", facecolor="white")
     plt.close()
@@ -59,10 +60,10 @@ def fig1():
 
 def fig2():
     phases = [
-        ("PHASE 0\nBASELINE LOCK", "behavior snapshot\nmetrics baseline\nrollback point"),
+        ("PHASE 0\nBASELINE LOCK", "wizard I (W1 W2\nW4 W6) - snapshot\n- net PROVEN"),
         ("PHASE 1\nDEEP SCAN", "static tooling\n+ LLM semantic\npass (dual-track)"),
-        ("PHASE 2\nEVIDENCE TRIAGE", "confidence score\nfalse-positive\nfilter - risk tier"),
-        ("PHASE 3\nUSER WIZARD", "scope, appetite,\nconstraints -\nuser decides"),
+        ("PHASE 2\nEVIDENCE TRIAGE", "confidence score\nfalsification pass\n- risk tier"),
+        ("PHASE 3\nUSER WIZARD II", "appetite + autonomy\n(W3 W5) -> final\nguard.config.json"),
         ("PHASE 4\nPLAN SYNTHESIS", "ordered task cards\nverify cmds +\nrollback per task"),
         ("PHASE 5\nGUARDED\nEXECUTION", "one task -> verify\n-> atomic commit\nor auto-revert"),
     ]
@@ -75,8 +76,8 @@ def fig2():
         box(ax, x, Y0, W, H, t, s, tfs=10, sfs=8.0)
         if i < len(phases) - 1:
             arrow(ax, x + W + 0.02, Y0 + H / 2, x + W + GAP - 0.02, Y0 + H / 2, lw=1.5)
-    for gx, label in [(x0 + 2 * (W + GAP) - GAP / 2, "GATE A - user approves findings"),
-                      (x0 + 4 * (W + GAP) - GAP / 2, "GATE B - user approves plan")]:
+    for gx, label in [(x0 + 3 * (W + GAP) - GAP / 2, "GATE A - user approves findings"),
+                      (x0 + 5 * (W + GAP) - GAP / 2, "GATE B - user approves plan")]:
         ax.scatter([gx], [Y0 + H + 0.33], marker="D", s=240, color=GILT, zorder=5)
         ax.text(gx, Y0 + H + 0.33, "U", ha="center", va="center", fontsize=7.5, color="white", fontweight="bold")
         ax.text(gx + 0.42, Y0 + H + 0.33, label, ha="left", va="center", fontsize=8.2, color=GILT, fontweight="bold")
@@ -84,7 +85,7 @@ def fig2():
     box(ax, vx - 0.1, loop_y, W + 0.2, 0.78, "VERIFY & CLOSE-OUT",
         "equivalence proof - metrics delta - report", fc=PANEL, tfs=8.8, sfs=7.4)
     arrow(ax, vx + W / 2, Y0 - 0.02, vx + W / 2, loop_y + 0.78 + 0.02, color=ACCENT, lw=1.6)
-    mid_x = x0 + 3 * (W + GAP) + W / 2
+    mid_x = x0 + 2 * (W + GAP) + W / 2  # center of PHASE 2 — mismatches re-triage, never the wizard
     arrow(ax, vx - 0.14, loop_y + 0.39, mid_x + 0.05, loop_y + 0.39, color=FAINT, lw=1.1, style="-")
     arrow(ax, mid_x, loop_y + 0.39, mid_x, Y0 - 0.02, color=FAINT, lw=1.1)
     ax.text((vx + mid_x) / 2, loop_y + 0.52, "mismatch -> re-triage / adjust scope (never force-fit)",
@@ -98,15 +99,16 @@ def fig2():
 
 
 def fig3():
-    cols = ["STRONG SAFETY NET\ncharacterization tests +\ngolden master at touch point",
-            "PARTIAL SAFETY NET\nsome unit tests /\ntype checks only",
-            "NO SAFETY NET\nnothing verifies\nbehavior here"]
-    rows = [("DATA / EXTERNAL CONTRACT\nschema, API payloads, DB", ["T3", "T3", "T3"]),
-            ("CROSS-MODULE\npublic API, shared utils", ["T2", "T3", "T3"]),
-            ("MODULE-INTERNAL\ncomponents, services", ["T1", "T2", "T3"]),
-            ("PURE / LEAF\nprivate functions, format", ["T0", "T1", "T2"])]
+    cols = ["STRONG SAFETY NET\nmutation-proven tests +\ngolden master at touch point",
+            "PARTIAL SAFETY NET\ntypecheck only, or tests\nnever watched failing (+1 tier)",
+            "NO SAFETY NET\nfrozen - net-building\nfirst (W4 hard rule)"]
+    rows = [("DATA / EXTERNAL CONTRACT\nschema, API payloads, DB", ["T3", "T3", "NET"]),
+            ("CROSS-MODULE\npublic API, shared utils", ["T2", "T3", "NET"]),
+            ("MODULE-INTERNAL\ncomponents, services", ["T1", "T2", "NET"]),
+            ("PURE / LEAF\nprivate functions, format", ["T0", "T1", "NET"])]
     TIER = {"T0": (GREEN, "auto-approvable"), "T1": (ACCENT, "standard verify"),
-            "T2": (AMBER, "elevated - GM + diff review"), "T3": (RED, "critical - flag + staged + sign-off")}
+            "T2": (AMBER, "elevated - GM + diff review"), "T3": (RED, "critical - flag + staged + sign-off"),
+            "NET": (FAINT, "no changes until a net exists")}
     gx, gy, cw, ch = 3.15, 0.85, 2.28, 1.02
     fig, ax = plt.subplots(figsize=(10.6, 7.2), dpi=160)
     ax.set_xlim(0, 10.6); ax.set_ylim(0, 7.2); ax.axis("off")
@@ -137,36 +139,40 @@ def fig3():
 
 
 def fig4():
-    Ww, Wh, row1_y, row2_y, xs = 3.55, 1.28, 4.05, 1.85, [0.45, 4.62, 8.79]
-    wiz_top = [("W1 - TRIGGER", "Why this run, why now?\nroutine hygiene - pre-release\nhardening - perf pain - post-incident"),
-               ("W2 - SCOPE", "What may be touched?\nwhole repo - named modules -\nhotspot list only (churn x complexity)"),
-               ("W3 - APPETITE", "Change profile?\nConservative (T0-T1) - Balanced\n(+T2) - Accelerated (+T3 w/ sign-off)")]
-    wiz_bot = [("W4 - SAFETY NET", "What proves behavior today?\ntests+GM - tests only - nothing\n-> nothing = Phase 0 work FIRST"),
-               ("W5 - AUTONOMY", "Where are the brakes?\napprove every task - every batch -\nplan-only + final report"),
-               ("W6 - DELIVERY", "How do changes land?\nPR per task - PR per phase -\nsingle integration branch")]
-    fig, ax = plt.subplots(figsize=(12.6, 6.4), dpi=160)
-    ax.set_xlim(0, 12.6); ax.set_ylim(0, 6.4); ax.axis("off")
+    Ww, Wh, row1_y, row2_y = 2.85, 1.30, 3.85, 1.75
+    wiz_i = [("W1 - TRIGGER", "Why this run, why now?\nroutine hygiene - pre-release -\nperf pain - post-incident"),
+             ("W2 - SCOPE", "What may be touched?\nwhole repo - named modules -\nhotspot list (churn x complexity)"),
+             ("W4 - SAFETY NET", "Believed proof of behavior?\ntests+GM - tests only - typecheck\nonly - nothing (P0 verifies it)"),
+             ("W6 - DELIVERY", "How do changes land?\nPR per task - PR per phase -\nintegration branch - direct")]
+    wiz_ii = [("W3 - APPETITE", "Change profile?\nConservative (T0-T1) - Balanced\n(+T2) - Accelerated (+T3 w/ sign-off)"),
+              ("W5 - AUTONOMY", "Where are the brakes?\napprove every task - every batch -\nplan-only + final report")]
+    fig, ax = plt.subplots(figsize=(13.0, 6.6), dpi=160)
+    ax.set_xlim(0, 13.0); ax.set_ylim(0, 6.6); ax.axis("off")
     fig.patch.set_facecolor("white")
-    for i, (t, s) in enumerate(wiz_top):
-        box(ax, xs[i], row1_y, Ww, Wh, t, s, tfs=10, sfs=7.8)
-        if i < 2:
-            arrow(ax, xs[i] + Ww + 0.03, row1_y + Wh / 2, xs[i + 1] - 0.03, row1_y + Wh / 2, lw=1.5)
-    arrow(ax, xs[2] + Ww / 2, row1_y - 0.03, xs[2] + Ww / 2, row2_y + Wh + 0.03, lw=1.5)
-    for i, (t, s) in enumerate(wiz_bot):
-        x = xs[2 - i]
-        box(ax, x, row2_y, Ww, Wh, t, s, tfs=10, sfs=7.8,
+    ax.text(0.45, row1_y + Wh + 0.30, "WIZARD I - before P0 (facts the pipeline consumes)",
+            fontsize=9.5, color=INK, fontweight="bold")
+    for i, (t, s) in enumerate(wiz_i):
+        x = 0.45 + i * (Ww + 0.28)
+        box(ax, x, row1_y, Ww, Wh, t, s, tfs=9.5, sfs=7.2,
             fc=("#FDF6EC" if t.startswith("W4") else "white"), ec=(GILT if t.startswith("W4") else EDGE))
-    for xf, xt in [(xs[2], xs[1]), (xs[1], xs[0])]:
-        arrow(ax, xf - 0.03, row2_y + Wh / 2, xt + Ww + 0.03, row2_y + Wh / 2, lw=1.5)
-    ax.text(xs[2] + Ww / 2, row2_y - 0.28, "hard rule: no safety net => characterize before any change (Feathers)",
-            ha="center", fontsize=7.8, color=GILT, fontweight="bold")
-    out_y = 0.28
-    box(ax, 3.1, out_y, 6.4, 0.92, "OUTPUT - PLAN CONFIGURATION  ->  GATE B",
-        "selections compile into guard-config.json + PLAN.md the agent executes", fc=PANEL, tfs=10.5, sfs=8)
-    arrow(ax, xs[0] + Ww / 2, row2_y - 0.03, xs[0] + Ww / 2, out_y + 0.92 + 0.02, lw=1.5, conn="arc3,rad=-0.25")
-    ax.text(0.45, 6.05, "The User Wizard - six decisions that turn analysis into a user-owned execution plan",
+        if i < 3:
+            arrow(ax, x + Ww + 0.02, row1_y + Wh / 2, x + Ww + 0.26, row1_y + Wh / 2, lw=1.4)
+    ax.text(0.45, row2_y + Wh + 0.30, "WIZARD II - at P3, after GATE A (judgment, made against the evidence)",
+            fontsize=9.5, color=INK, fontweight="bold")
+    for i, (t, s) in enumerate(wiz_ii):
+        x = 0.45 + i * (Ww + 0.28)
+        box(ax, x, row2_y, Ww, Wh, t, s, tfs=9.5, sfs=7.2)
+    ax.text(0.45 + 2 * (Ww + 0.28), row2_y + Wh / 2,
+            "hard rule no profile overrides:\nno net => net-building FIRST, frozen otherwise;\nnet mutation-proven (V4) before T2+ (Feathers)",
+            fontsize=7.8, color=GILT, fontweight="bold", va="center")
+    out_y = 0.30
+    box(ax, 3.2, out_y, 6.6, 0.92, "OUTPUT - guard.config.json",
+        "provisional at P0 (W1 W2 W4 W6) -> final at P3 (+W3 W5, verified net_status) - schema-validated by guard_lint.py",
+        fc=PANEL, tfs=10.5, sfs=7.4)
+    arrow(ax, 0.45 + Ww / 2, row2_y - 0.03, 3.2 + 3.3, out_y + 0.94, lw=1.5, conn="arc3,rad=-0.15")
+    ax.text(0.45, 6.25, "The User Wizard - six decisions, split: facts first, judgment after evidence",
             fontsize=12.5, fontweight="bold", color=INK)
-    ax.text(0.45, 5.68, "The agent asks; the user decides. Every answer maps to concrete guard-rails in the generated plan.",
+    ax.text(0.45, 5.88, "The agent asks; the user decides. Every answer maps to an enforceable constraint in guard.config.json.",
             fontsize=8.8, color=FAINT)
     plt.savefig(f"{OUT}/fig4-wizard-flow.png", bbox_inches="tight", facecolor="white")
     plt.close()
