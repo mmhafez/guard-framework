@@ -3,8 +3,8 @@
 Read at Phase 1 (the semantic track) and keep in mind at Phase 5. These are the
 patterns LLM-generated code repeats systematically — the defects linters cannot
 see, and the ones most likely to be present in an AI-built repo *and* most
-likely to sneak into your own edits. Distilled from published research and a
-field catalog (the `code-guard` skill's ai-failure-modes reference).
+likely to sneak into your own edits. Distilled from published research and an
+operational field catalog of AI-authored defects.
 
 For each: the pattern, why it happens, the rule. Nine of fifteen trace to one
 root cause — **the model is biased toward emitting more code, more guards, more
@@ -23,8 +23,9 @@ abstraction than the spec requires.** The cure is restraint.
    "Step N" scaffolding. *Comments explain why, never what.*
 5. **Duplication instead of reuse.** Inline copies of logic that already exists
    in a helper. The strongest quantitative result in the literature (GitClear:
-   copy-pasted 5+ line blocks up ~8×, 2021→2024). *Search for an existing
-   function before writing one.*
+   blocks of 5+ duplicated lines up ~8× during 2024; by H1 2026 copy/pasted
+   lines reached 15.7% of all changes vs 9.4% in 2022, and refactored "moved"
+   code fell to 3.8%). *Search for an existing function before writing one.*
 6. **Hallucinated APIs and packages.** Imports/methods/signatures that don't
    exist in the installed version (~20% of LLM package references are
    fabricated across 16 models). *Verify every external call against the

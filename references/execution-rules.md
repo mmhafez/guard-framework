@@ -5,7 +5,10 @@ most, encoded as standing rules.
 
 ## Per-task protocol (in order)
 
-1. **Branch** from latest green main. Never stack unverified changes.
+Log each step to `EXECUTION.log` as `timestamp | task | step | result`.
+
+1. **Branch** from the latest green delivery base (per W6: main, or the
+   integration branch). Never stack unverified changes.
 2. **Pre-flight** — run the card's verify commands before editing; confirm they
    act on a non-empty subject (V2). A red or vacuously-green pre-flight means
    stop and report, not proceed.
@@ -15,6 +18,8 @@ most, encoded as standing rules.
    characterization tests. 100% green; no "mostly passed."
 5. **Proof-rung** — reach the card's rung: falsification record (V3),
    revert-mutation (V4), or anchor (V5). Done at the rung, not at "green."
+   (Multi-agent mode: the independent review slots between steps 4 and 5, on
+   the exact tree it approves — see multi-agent.md.)
 6. **Commit** — one atomic commit referencing task + finding IDs.
 7. **Report** — result, metrics touched, surprises, claim labels, per W5 cadence.
 
@@ -27,7 +32,14 @@ that area is wrong — return to re-triage, don't push harder.
 
 - **Never run a suite while another job runs one.** Concurrency produces phantom
   failures against a true value of zero. A quiet gate (no other test/engine
-  process alive) precedes any measurement, excluding its own shell.
+  process alive) precedes any measurement, excluding its own shell. A workable
+  probe — judged by exit code, never by counting output lines:
+
+  ```sh
+  # exit 0 = quiet, exit 1 = another runner is alive
+  ps -eo pid,command | awk -v self=$$ \
+    '$1==self || /awk/ {next} /vitest|jest|pytest|go test/ {f=1} END {exit f}'
+  ```
 - **A failed command must never read as a benign value.** `git status | wc -l` →
   `0` on failure reads as "clean"; `|| echo 0` turns a failed count into
   "nothing to do." Judge by exit code; sweep the *semantic class* — any command
