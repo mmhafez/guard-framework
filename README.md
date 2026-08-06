@@ -60,9 +60,7 @@ P6 Close-out ◀─ P5 Guarded Execution ◀─ P4 Plan Synthesis ◀─ P3 User
 
 GUARD is a portable instruction skill — no MCP server, no API key, no network access required. Just `SKILL.md` + `references/`.
 
-**Option A — download the packaged skill** from the latest [Release](../../releases) (`guard-framework.skill`), and drop it into your agent's skill directory.
-
-**Option B — build it from source:**
+**Option A — build the packaged skill** (one command, produces `guard-framework.skill`):
 
 ```bash
 git clone https://github.com/mmhafez/guard-framework.git
@@ -70,7 +68,9 @@ cd guard-framework
 bash build-skill.sh        # produces guard-framework.skill
 ```
 
-**Option C — use it in place:** clone the repo and point your agent at `SKILL.md`, or paste the [Constitution](references/constitution.md) into your repo's `AGENTS.md` and drive the phases with the [prompts](references/prompts.md).
+Then drop `guard-framework.skill` into your agent's skill directory.
+
+**Option B — use it in place:** clone the repo and point your agent at `SKILL.md`, or paste the [Constitution](references/constitution.md) into your repo's `AGENTS.md` and drive the phases with the [prompts](references/prompts.md).
 
 ## Quick start
 
@@ -105,10 +105,11 @@ guard-framework/
     └── generate_figures.py       # regenerates the diagrams into docs/figures/
 ```
 
-The packaged `guard-framework.skill` and the figure PNGs are attached to the
-[latest release](../../releases) rather than committed, keeping the source tree
-text-only and diff-friendly. Regenerate either locally: `bash build-skill.sh`
-and `python3 docs/generate_figures.py`.
+The packaged `guard-framework.skill` and the figure PNGs are build artifacts,
+kept out of the source tree to keep it text-only and diff-friendly. Build them
+locally in one command each: `bash build-skill.sh` produces the installable
+skill, and `python3 docs/generate_figures.py` regenerates the diagrams into
+`docs/figures/` (referenced by the full playbook).
 
 ## What GUARD does NOT do
 
