@@ -16,3 +16,8 @@ __pycache__/
 credentials.json
 *.pem
 *.key
+
+# Build artifacts (produced by build-skill.sh / generate_figures.py)
+/guard-framework.skill
+.skill-build/
+docs/figures/*.png
