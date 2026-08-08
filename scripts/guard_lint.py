@@ -158,7 +158,15 @@ def lint_findings(path):
             if col not in header:
                 fail(f"findings: table header missing column '{col}'")
     data_rows = re.findall(r"(?im)^\|\s*F-\S+\s*\|", text)
-    if not data_rows and "NO-FINDINGS:" not in text:
+    # The escape hatch must be a DECLARATION LINE, not the token appearing
+    # anywhere in the document. A plain `"NO-FINDINGS:" in text` was satisfied
+    # by the template's own instructions ("...write `NO-FINDINGS: <counts>`"),
+    # so every report derived from the template passed with zero rows without
+    # anyone ever declaring it — this check being satisfiable by absence is
+    # exactly what this file's design rules forbid. Anchored at line start and
+    # required to carry content, so prose and backticked examples do not count.
+    declared = re.search(r"(?im)^\s*NO-FINDINGS:\s*\S+", text)
+    if not data_rows and not declared:
         fail("findings: zero data rows and no explicit 'NO-FINDINGS: <per-lens zero counts>' line — "
              "an empty report must say so out loud, not pass by absence")
     if not re.search(r"(?im)^##.*dynamic-zone", text):
