@@ -29,9 +29,11 @@ Three rules make it safe:
 - **The reviewer is read-only.** A reviewer that can fix stops judging.
 - **Rounds are bounded** (default 3) with a declared exhaustion route (escalate
   to the user). An unbounded fix loop is how budgets burn.
-- **The verdict is anchored.** The reviewer's PASS is bound to the exact commit
-  SHA it reviewed, so a later change invalidates it; a review of an unmerged
-  worktree is never presented as a merged PASS.
+- **The verdict is anchored.** The reviewer's PASS is bound to the exact tree
+  it reviewed — record the worktree tree-hash (`git rev-parse HEAD^{tree}` or
+  `git write-tree` pre-commit) in the PASS — so any later edit invalidates it;
+  a review of an unmerged worktree is never presented as a merged PASS. In the
+  P5 protocol the review slots between verify (step 4) and proof-rung (step 5).
 
 ## The adversarial review lenses
 

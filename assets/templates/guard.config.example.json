@@ -1,0 +1,18 @@
+{
+  "status": "final",
+  "trigger": "routine-hygiene",
+  "scope": {
+    "allow": ["src/**"],
+    "deny": ["src/legacy/**", "src/generated/**", "dist/**", "vendor/**"]
+  },
+  "max_tier": "T2",
+  "proof_rung_ceiling": "V4",
+  "approval_cadence": "per-t2-change",
+  "delivery": "pr-per-task",
+  "delivery_base": "main",
+  "frozen_modules": ["src/billing"],
+  "net_status": { "src/utils": "tests+gm", "src/billing": "none" },
+  "net_status_claimed": { "src/utils": "tests", "src/billing": "tests" },
+  "run_id": "guard-2026-08-06-a",
+  "baseline_tag": "guard-baseline-2026-08-06"
+}

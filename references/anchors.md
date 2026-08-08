@@ -40,6 +40,16 @@ Each is the ghost of a real near-miss. The probe is direct — not a status read
    weaken an anchor to make everything green. Loosening an anchor to unblock a
    delivery is not a shortcut — it is the failure.
 
+## Offline anchors (libraries, CLIs, packages)
+
+An artifact that never deploys still terminates at the world. Two probes
+replace the deploy/runtime/endpoint kinds: the **gate anchor** unchanged
+(break the subject, watch the gate fail, restore), and a **consumer-smoke
+anchor** — build and pack the artifact, install it into a scratch consumer
+project, make one real call, and assert the discriminating detail of the
+result. "The library works" is grounded by a consumer that actually imported
+and ran it, not by the library's own suite reading its own fixtures.
+
 ## The standing tell
 
 Every near-miss is one missing anchor wearing a different costume: a merge with

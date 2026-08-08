@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/mmhafez/guard-framework/references/guard.config.schema.json",
+  "title": "guard.config.json — the GUARD run contract",
+  "description": "Compiled from the six wizard answers. Written provisional at P0 (Wizard I: W1, W2, W4-belief, W6), finalized at P3 (Wizard II: W3, W5, verified net_status). The executing agent follows it exactly (Constitution rule 9). Validate with: python3 scripts/guard_lint.py config guard.config.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "trigger", "scope", "delivery", "delivery_base"],
+  "properties": {
+    "status": {
+      "enum": ["provisional", "final"],
+      "description": "provisional = Wizard I only (pre-P3); final = all six answers. P4 and later require final."
+    },
+    "trigger": {
+      "enum": ["routine-hygiene", "pre-release-hardening", "performance-pain", "post-incident"],
+      "description": "W1 — controls finding prioritization weights."
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allow"],
+      "properties": {
+        "allow": {
+          "type": "array", "items": {"type": "string"}, "minItems": 1,
+          "description": "W2 — glob allow-list. Nothing outside it is scanned or touched."
+        },
+        "deny": {
+          "type": "array", "items": {"type": "string"},
+          "description": "Never scanned, never touched. Generated/vendored paths enumerated at P1 entry land here."
+        }
+      }
+    },
+    "max_tier": {
+      "enum": ["T0", "T1", "T2", "T3"],
+      "description": "W3 — highest tier the plan may contain. Required when status=final."
+    },
+    "proof_rung_ceiling": {
+      "enum": ["V2", "V3", "V4", "V5"],
+      "description": "Highest rung the run will be asked to reach (from the W3 profile). Required when status=final."
+    },
+    "approval_cadence": {
+      "enum": ["per-task", "per-batch", "per-t2-change", "plan-only"],
+      "description": "W5 — per-task = approve every task; per-batch = approve batches; per-t2-change = batches plus every T2+ individually (Balanced default); plan-only = run after Gate B, report at end. Required when status=final."
+    },
+    "delivery": {
+      "enum": ["pr-per-task", "pr-per-phase", "integration-branch", "direct"],
+      "description": "W6 — git topology."
+    },
+    "delivery_base": {
+      "type": "string",
+      "description": "The branch P5 task branches are cut from and P0 commits to (e.g. \"main\", or the integration branch name when delivery=integration-branch)."
+    },
+    "frozen_modules": {
+      "type": "array", "items": {"type": "string"},
+      "description": "Scanned — findings are reported at Gate A — but no change to them may be planned. (Contrast scope.deny: never scanned at all.)"
+    },
+    "net_status": {
+      "type": "object",
+      "additionalProperties": {"enum": ["tests+gm", "tests", "typecheck", "none"]},
+      "description": "Per-module VERIFIED net (post-P0 proof), not the W4 belief. none = frozen except net-building; typecheck or unproven tests = escalate findings one tier."
+    },
+    "net_status_claimed": {
+      "type": "object",
+      "additionalProperties": {"enum": ["tests+gm", "tests", "typecheck", "none"]},
+      "description": "The user's W4 belief, kept beside the verified net_status; a discrepancy is a Gate A finding."
+    },
+    "run_id": {"type": "string", "description": "Matches GUARD-RUN.md."},
+    "baseline_tag": {"type": "string", "description": "The P0 tag, e.g. guard-baseline-2026-08-06."}
+  }
+}
